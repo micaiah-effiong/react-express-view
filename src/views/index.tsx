@@ -1,5 +1,5 @@
 import React from 'react';
-import DefaultLayout from './layouts/default';
+import DefaultLayout from './layouts';
 
 export default function HelloMessage(props: { title: string; name: string }) {
   return (
@@ -8,3 +8,4 @@ export default function HelloMessage(props: { title: string; name: string }) {
     </DefaultLayout>
   );
 }
+//

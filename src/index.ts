@@ -1,21 +1,34 @@
-import express from 'express';
-import http from 'http';
 import path from 'path';
-import reactViews from 'express-react-views';
+import fs from 'fs';
+import ReactDOMServer from 'react-dom/server';
+import express from 'express';
 
+const PORT = process.env.PORT || 3000;
 const app = express();
 
-// all environments
-app.set('port', process.env.PORT || 3000);
-app.set('views', __dirname + '/views');
-app.set('view engine', 'jsx');
-app.engine('jsx', reactViews.createEngine());
-app.use(express.static(path.join(__dirname, 'public')));
+app.get('/', (req, res) => {
+  fs.readFile(
+    path.resolve(__dirname, 'pages/index.html'),
+    'utf8',
+    (err, data) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('An error occurred');
+      }
 
-app.get('/', function (req, res) {
-  res.render('index', { title: 'Express', foo: { bar: 'baz' } });
+      const a = require('./views/vercel');
+
+      return res.end(
+        ReactDOMServer.renderToString(a.default({ name: 'boy', title: 'good' }))
+      );
+    }
+  );
 });
 
-http.createServer(app).listen(app.get('port'), function () {
-  console.log('Express server listening on port ' + app.get('port'));
+app.use(
+  express.static(path.resolve(__dirname, '.', 'dist'), { maxAge: '30d' })
+);
+
+app.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
 });
